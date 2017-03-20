@@ -74,13 +74,13 @@ def main():
 	keypressed = False
 
 	def key_press(k, mod):
-		if k==key.LEFT:  expert_a[0] = -1.0
-		if k==key.RIGHT: expert_a[0] = +1.0
+		if k==key.LEFT:  expert_a[0] = 0
+		if k==key.RIGHT: expert_a[0] = 1
 
 	def key_release(k, mod):
 		expert_a[0] = 0
 
-	expert_env = gym.make('VideoPinball-v0')
+	expert_env = gym.make('CartPole-v0')
 	expert_env.render()
 	# from IPython import embed
 	# embed()
@@ -90,16 +90,15 @@ def main():
 
 
 	# Clone
-	bh_env = gym.make('VideoPinball-v0')
+	bh_env = gym.make('CartPole-v0')
 	bh_env.render()
 	bh_env.env.viewer.window.set_caption('CLONE')
 	
-	feed_bh, train_bh = make_clone(tf.Session(), 2,1)
+	feed_bh, train_bh = make_clone(tf.Session(), 4,1)
 
 
 	expert_state = expert_env.reset()
 	bh_state = bh_env.reset()
-	bh_state = 
 
 	i = 0
 	last_reset = 0
@@ -117,7 +116,8 @@ def main():
 		if abs(expert_a[0]) > 0:	
 			expert_states.append(expert_state)
 			expert_actions.append([expert_a[0]])
-		expert_state, _, expert_done, _ = expert_env.step(expert_a)
+		print(expert_a)
+		expert_state, _, expert_done, _ = expert_env.step(expert_a[0])
 		if expert_done or i - last_reset > 1000:
 			expert_state = expert_env.reset()
 			last_reset = i
@@ -125,21 +125,14 @@ def main():
 		expert_env.render()
 
 
+
 		# Handle the clone.
-		#119, 120, 120 RGB
-		bh_state, _, bh_done, _ = bh_env.step(feed_bh(bh_state))
+		bh_state, _, bh_done, _ = bh_env.step(int(feed_bh(bh_state)[0]+0.5))
 		if bh_done or i - last_reset > 1000:
 			bh_state = bh_env.reset()
 			last_reset = i
 
 		bh_env.render()
-
-def find_ball(bh,r,g,b):
-	for i in range(len(bh)):
-		for j in range(len(bh[0])):
-			if bh[i][j][0] == r and bh[i][j][1] == g and bh[i][j][2] == b:
-				return [i,j]
-	return [0,0]
 
 
 

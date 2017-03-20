@@ -75,7 +75,7 @@ def main():
 
 	def key_press(k, mod):
 		if k==key.LEFT:  expert_a[0] = -1.0
-		if k==key.RIGHT: expert_a[0] = +1.0
+		if k==key.RIGHT: expert_a[0] = 1.0
 
 	def key_release(k, mod):
 		expert_a[0] = 0
@@ -116,6 +116,7 @@ def main():
 		if abs(expert_a[0]) > 0:	
 			expert_states.append(expert_state)
 			expert_actions.append([expert_a[0]])
+		print(expert_a)
 		expert_state, _, expert_done, _ = expert_env.step(expert_a)
 		if expert_done or i - last_reset > 1000:
 			expert_state = expert_env.reset()
